@@ -1,0 +1,33 @@
+{
+  "name": "@lagrange/animator",
+  "title": "la-grange-animator",
+  "author": "La Grange",
+  "license": "ISC",
+  "version": "0.0.8",
+  "keywords": [
+    "js",
+    "javascript",
+    "parallax",
+    "animation",
+    "scroll"
+  ],
+  "main": "dist/animator.js",
+  "module": "dist/animator.mjs",
+  "unpkg": "dist/animator.umd.js",
+  "source": "src/index.js",
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.2",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.14.2",
+    "microbundle": "^0.11.0"
+  },
+  "description": ""
+}
