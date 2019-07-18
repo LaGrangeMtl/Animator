@@ -1,0 +1,1 @@
+parcel 'src/js/index.js' -o dist/animator.min.js
