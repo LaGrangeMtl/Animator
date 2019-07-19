@@ -151,7 +151,6 @@ export function Animator() {
 	}
 
 	/**
-	 * 
 	 * @param {HTMLElement} context 
 	 * @param {HTMLElement} elem 
 	 * @param {AnimatorRect} rect 
@@ -185,7 +184,6 @@ export function Animator() {
 	}
 
 	/**
-	 * 
 	 * @param {HTMLElement} context 
 	 * @param {HTMLElement} elem 
 	 * @param {AnimatorRect} rect 
@@ -218,7 +216,6 @@ export function Animator() {
 	}
 
 	/**
-	 * 
 	 * @param {HTMLElement} context 
 	 * @param {HTMLElement} elem 
 	 * @returns {AnimatorRect}
@@ -390,7 +387,6 @@ export function Animator() {
 	}
 
 	/**
-	 * 
 	 * @param {array} list 
 	 * @param {HTMLElement} elem 
 	 */
