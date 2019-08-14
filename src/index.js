@@ -446,4 +446,10 @@ export function Animator() {
 		animations = anims;
 		this.updateElements();
 	};
+
+	this.debug = () => {
+		console.log('animations', animations);
+		console.log('elements', elements);
+		console.log('contexts', contexts);
+	};
 }
