@@ -221,13 +221,13 @@ export function Animator() {
 	 * @returns {AnimatorRect}
 	 */
 	function getRect(context, elem) {
-		const rect = elem.getBoundingClientRect();
+		const { top, height } = elem.getBoundingClientRect();
 		const st = getContextScrollTop(context);
 		const id = elemGuid(context);
-
+		
 		return {
-			top: (rect.top - animatorTopDictionnary[id]) + st,
-			height: rect.height,
+			top: (top - animatorTopDictionnary[id]) + st,
+			height,
 		};
 	}
 
@@ -246,7 +246,7 @@ export function Animator() {
 		}
 		if (!contexts.find(ctx => context === ctx)) {
 			const id = elemGuid(context);
-			animatorTopDictionnary[id] = el.getBoundingClientRect().top;
+			animatorTopDictionnary[id] = el.getBoundingClientRect().top - el.scrollTop;
 			contexts.push(context);
 		}
 		return context;
@@ -447,9 +447,11 @@ export function Animator() {
 		this.updateElements();
 	};
 
+	/* eslint-disable no-console */
 	this.debug = () => {
 		console.log('animations', animations);
 		console.log('elements', elements);
 		console.log('contexts', contexts);
 	};
+	/* eslint-enable no-console */
 }
