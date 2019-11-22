@@ -59,6 +59,13 @@ export function updateAll() {
 	});
 }
 
+// @ts-ignore
+window.__animators = instances; //eslint-disable-line
+
+function getPageScroll() {
+	return (document.scrollingElement || document.documentElement).scrollTop;
+}
+
 export function Animator() {
 	let animations = [];
 	let elements = [];
@@ -221,9 +228,12 @@ export function Animator() {
 	 * @returns {AnimatorRect}
 	 */
 	function getRect(context, elem) {
+		const style = elem.getAttribute('style');
+		elem.setAttribute('style', '');
 		const { top, height } = elem.getBoundingClientRect();
 		const st = getContextScrollTop(context);
 		const id = elemGuid(context);
+		elem.setAttribute('style', style);
 		
 		return {
 			top: (top - animatorTopDictionnary[id]) + st,
@@ -329,12 +339,12 @@ export function Animator() {
 	 */
 	function matrix(initialMatrix, values) {
 		if (
-			values.rotation
-			|| values.scaleX
-			|| values.scaleY
-			|| values.x
-			|| values.y
-			|| values.z
+			values.rotation !== undefined
+			|| values.scaleX !== undefined
+			|| values.scaleY !== undefined
+			|| values.x !== undefined
+			|| values.y !== undefined
+			|| values.z !== undefined
 		) {
 			values.transform = toCSS(composeMultiple([
 				initialMatrix,
@@ -360,12 +370,13 @@ export function Animator() {
 	function update(ctx, st) {
 		elements.forEach((el) => {
 			if (el.context !== ctx) return;
-
+			
 			const values = matrix(el.initialMatrix, transformValues(el, st));
 			const id = elemGuid(el.node);
 			if (hasChanged(id, values)) {
+				
 				Object.assign(el.node.style, values);
-				lastValuesDictionnary[id] = values;
+				lastValuesDictionnary[id] = JSON.stringify(values);
 			}
 		});
 	}
