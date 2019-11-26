@@ -374,7 +374,6 @@ export function Animator() {
 			const values = matrix(el.initialMatrix, transformValues(el, st));
 			const id = elemGuid(el.node);
 			if (hasChanged(id, values)) {
-				
 				Object.assign(el.node.style, values);
 				lastValuesDictionnary[id] = JSON.stringify(values);
 			}
@@ -385,8 +384,10 @@ export function Animator() {
 	 * @param {HTMLElement} elem 
 	 */
 	function getInitialMatrix(elem) {
+		const prev = elem.style.transform;
 		elem.style.transform = '';
 		const transform = window.getComputedStyle(elem).getPropertyValue('transform');
+		elem.style.transform = prev;
 		return transform !== 'none' ? fromString(transform) : identity();
 	}
 
