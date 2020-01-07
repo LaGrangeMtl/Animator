@@ -1,6 +1,6 @@
 //@ts-check
 
-import 'core-js/fn/array/find';
+// import 'core-js/fn/array/find';
 
 import { elemGuid } from './utils/guid';
 import Ease from './utils/Easings';
@@ -12,6 +12,7 @@ import {
 	fromString,
 	identity,
 	composeMultiple,
+	matrix2dto3d,
 } from './utils/CssMatrix';
 import { constrain } from './utils/constrain';
 import { map } from './utils/map';
@@ -59,12 +60,23 @@ export function updateAll() {
 	});
 }
 
+const updateScreen = () => {
+	screen = {
+		[SCREEN_TOP]: 0,
+		[SCREEN_CENTER]: (window.innerHeight / 2),
+		[SCREEN_BOTTOM]: window.innerHeight,
+	};
+};
+
+function valueOrDefault(value, defaultValue = 0) {
+	return value !== undefined ? value : defaultValue;
+}
+
+let screen;
+updateScreen();
+
 // @ts-ignore
 window.__animators = instances; //eslint-disable-line
-
-function getPageScroll() {
-	return (document.scrollingElement || document.documentElement).scrollTop;
-}
 
 export function Animator() {
 	let animations = [];
@@ -75,11 +87,6 @@ export function Animator() {
 	const loopDictionnary = {};
 	const lastValuesDictionnary = {};
 	const animatorTopDictionnary = {};
-
-	const win = {
-		width: 0,
-		height: 0,
-	};
 
 	instances.push(this);
 
@@ -99,28 +106,17 @@ export function Animator() {
 	 */
 	function parseWhen(context, rect, when) {
 		const parts = when.split('_');
-		if (parts.length !== 2) throw new Error('Missing parameters in animation "when" (expects: ELEM_SCREEN)');
-
-		const st = getContextScrollTop(context);
-		const id = elemGuid(context);
+		if (parts.length !== 2) throw new Error('Missing parameters in animation "when" (expects: ELEM_* | SCREEN_*)');
 
 		let obj;
 		switch (parts[0]) {
 			default:
-			case ELEM_TOP: obj = rect.top - st; break;
-			case ELEM_CENTER: obj = rect.top + (rect.height / 2) - st; break;
-			case ELEM_BOTTOM: obj = rect.top + rect.height - st; break;
-		}
-		
-		let screen;
-		switch (parts[1]) {
-			default:
-			case SCREEN_TOP: screen = animatorTopDictionnary[id] + st; break;
-			case SCREEN_CENTER: screen = animatorTopDictionnary[id] + (win.height / 2) + st; break;
-			case SCREEN_BOTTOM: screen = animatorTopDictionnary[id] + win.height + st; break;
+			case ELEM_TOP: obj = rect.top; break;
+			case ELEM_CENTER: obj = rect.top + (rect.height / 2); break;
+			case ELEM_BOTTOM: obj = rect.top + rect.height; break;
 		}
 
-		return obj - screen;
+		return obj - screen[parts[1]];
 	}
 
 	/**
@@ -174,7 +170,7 @@ export function Animator() {
 			animation = animation.props;
 		}
 
-		if (!animation) return [];
+		if (!animation) return {};
 		return animation.reduce((c, anim) => {
 			let values = { ...anim };
 			delete values.when;
@@ -193,38 +189,6 @@ export function Animator() {
 	/**
 	 * @param {HTMLElement} context 
 	 * @param {HTMLElement} elem 
-	 * @param {AnimatorRect} rect 
-	 * @param {string} animationId 
-	 */
-	function getChildren(context, elem, rect, animationId) {
-		if (Array.isArray(animations[animationId])) {
-			return [];
-		}
-		
-		const children = (animations[animationId] && animations[animationId].children) || [];
-
-		return children.reduce((c, anim) => {
-			const arr = Array.from(elem.querySelectorAll(anim.selector));
-			
-			arr.forEach((el) => {
-				const keyframes = getKeyframes(context, elem, rect, null, anim.props, el);
-				
-				c.push({
-					node: el,
-					context,
-					ease: anim.ease,
-					keyframes,
-					keys: Object.keys(keyframes),
-					initialMatrix: getInitialMatrix(el),
-				});
-			});
-			return c;
-		}, []);
-	}
-
-	/**
-	 * @param {HTMLElement} context 
-	 * @param {HTMLElement} elem 
 	 * @returns {AnimatorRect}
 	 */
 	function getRect(context, elem) {
@@ -234,7 +198,7 @@ export function Animator() {
 		const st = getContextScrollTop(context);
 		const id = elemGuid(context);
 		elem.setAttribute('style', style);
-		
+
 		return {
 			top: (top - animatorTopDictionnary[id]) + st,
 			height,
@@ -256,7 +220,7 @@ export function Animator() {
 		}
 		if (!contexts.find(ctx => context === ctx)) {
 			const id = elemGuid(context);
-			animatorTopDictionnary[id] = el.getBoundingClientRect().top - el.scrollTop;
+			animatorTopDictionnary[id] = el.getBoundingClientRect().top + el.scrollTop;
 			contexts.push(context);
 		}
 		return context;
@@ -283,29 +247,29 @@ export function Animator() {
 	 */
 	function transformValues(el, st) {
 		return el.keys.map((propKey) => {
-			return el.keyframes[propKey].reduce((propCarry, propVal) => {
-				const [offset, value] = propVal;
-				if (propCarry.startOffset === undefined || st >= offset) {
-					propCarry.startOffset = offset;
-					propCarry.startValue = value;
+			return {
+				st,
+				ease: el.ease,
+				key: propKey,
+				...el.keyframes[propKey]
+					.reduce((propCarry, propVal, i) => {
+						const [offset, value] = propVal;
 
-					if (propCarry.endOffset <= propCarry.startOffset) {
-						propCarry.endOffset = offset;
-						propCarry.endValue = value;
-					}
-				}
-				if (propCarry.endOffset === undefined || st <= offset) {
-					propCarry.endOffset = offset;
-					propCarry.endValue = value;
-				}
-				
-				return {
-					st,
-					ease: el.ease,
-					key: propKey,
-					...propCarry,
-				};
-			}, {});
+						switch (i) {
+							case 0: 
+								propCarry.startOffset = offset;
+								propCarry.startValue = value;
+								break;
+							case 1:
+							default:
+								propCarry.endOffset = offset;
+								propCarry.endValue = value;
+								break;
+						}
+						
+						return propCarry;
+					}, {}),
+			};
 		}).reduce(constrainValues, {});
 	}
 
@@ -348,12 +312,41 @@ export function Animator() {
 		) {
 			values.transform = toCSS(composeMultiple([
 				initialMatrix,
-				translate(values.x || 0, values.y || 0, values.z || 0),
-				rotate(values.rotation || 0),
-				scale(values.scaleX || 1, values.scaleY || 1, values.scaleZ || 1),
+				translate(valueOrDefault(values.x), valueOrDefault(values.y), valueOrDefault(values.z)),
+				rotate(valueOrDefault(values.rotation)),
+				scale(valueOrDefault(values.scaleX, 1), valueOrDefault(values.scaleY, 1), valueOrDefault(values.scaleZ, 1)),
 			]));
 		}
 
+		delete values.rotation;
+		delete values.scaleX;
+		delete values.scaleY;
+		delete values.x;
+		delete values.y;
+		delete values.z;
+		return values;
+	}
+
+
+	/**
+	 * @param {object} values
+	 */
+	function transform2d(values) {
+		if (
+			values.rotation !== undefined
+			|| values.scaleX !== undefined
+			|| values.scaleY !== undefined
+			|| values.x !== undefined
+			|| values.y !== undefined
+			|| values.z !== undefined
+		) {
+			const t = `translate(${valueOrDefault(values.x, 0)}px, ${valueOrDefault(values.y, 0)}px)`;
+			const r = `rotate(${valueOrDefault(values.rotation, 0)}deg)`;
+			const s = `scale(${valueOrDefault(values.scaleX, 1)}, ${valueOrDefault(values.scaleY, 1)})`;
+
+			values.transform = `${t} ${r} ${s}`;
+		}
+		
 		delete values.rotation;
 		delete values.scaleX;
 		delete values.scaleY;
@@ -369,9 +362,34 @@ export function Animator() {
 	 */
 	function update(ctx, st) {
 		elements.forEach((el) => {
-			if (el.context !== ctx) return;
+			if (el.context !== ctx || Object.keys(el.keyframes).length === 0) return;
 			
-			const values = matrix(el.initialMatrix, transformValues(el, st));
+			const isSVG = ~el.node.namespaceURI.indexOf('svg');
+			let values = null;
+			if (isSVG) {
+				values = transform2d(transformValues(el, st));
+			} else if (el.is3DMatrix || (el.initialMatrix && el.initialMatrix.length === 16)) {
+				values = matrix(el.initialMatrix, transformValues(el, st));
+			} else {
+				values = transform2d(transformValues(el, st));
+				if (values.transform && el.initialMatrix) {
+					const [a, b, c, d, tx, ty] = el.initialMatrix;
+
+					const scaleX = Math.sign(a) * Math.sqrt((a * a) + (b * b));
+					const scaleY = Math.sign(d) * Math.sqrt((c * c) + (d * d));
+					const rotation = Math.atan2(-b, a);
+
+					values.transform += ' ' + transform2d({
+						scaleX,
+						scaleY,
+						rotation,
+						x:
+						tx,
+						y: ty,
+					}).transform;
+				}
+			}
+
 			const id = elemGuid(el.node);
 			if (hasChanged(id, values)) {
 				Object.assign(el.node.style, values);
@@ -383,12 +401,18 @@ export function Animator() {
 	/**
 	 * @param {HTMLElement} elem 
 	 */
-	function getInitialMatrix(elem) {
+	function getInitialMatrix(elem, is3D = false) {
 		const prev = elem.style.transform;
 		elem.style.transform = '';
 		const transform = window.getComputedStyle(elem).getPropertyValue('transform');
 		elem.style.transform = prev;
-		return transform !== 'none' ? fromString(transform) : identity();
+		
+		if (transform === 'none') return null;
+
+		let m = fromString(transform);
+		m = (m.length < 16 && is3D) ? matrix2dto3d(m) : m;
+		
+		return m;
 	}
 
 	/**
@@ -396,6 +420,47 @@ export function Animator() {
 	 */
 	function getEase(animationId) {
 		return (animations[animationId] && animations[animationId].ease) || null;
+	}
+
+	/**
+	 * @param {string} animationId 
+	 */
+	function is3DMatrix(animationId) {
+		return (animations[animationId] && animations[animationId].force3d) || false;
+	}
+
+	/**
+	 * @param {HTMLElement} context 
+	 * @param {HTMLElement} elem 
+	 * @param {AnimatorRect} rect 
+	 * @param {string} animationId 
+	 */
+	function getChildren(context, elem, rect, animationId) {
+		if (Array.isArray(animations[animationId])) {
+			return [];
+		}
+		
+		const children = (animations[animationId] && animations[animationId].children) || [];
+
+		return children.reduce((c, anim) => {
+			const arr = Array.from(elem.querySelectorAll(anim.selector));
+			
+			arr.forEach((el) => {
+				const keyframes = getKeyframes(context, elem, rect, null, anim.props, el);
+				
+				c.push({
+					node: el,
+					parent: elem,
+					context,
+					ease: anim.ease,
+					is3DMatrix: is3DMatrix(animationId),
+					keyframes,
+					keys: Object.keys(keyframes),
+					initialMatrix: getInitialMatrix(el, is3DMatrix(animationId)),
+				});
+			});
+			return c;
+		}, []);
 	}
 
 	/**
@@ -415,10 +480,11 @@ export function Animator() {
 		const props = {
 			node: elem,
 			context,
+			is3DMatrix: is3DMatrix(animationId),
 			ease: getEase(animationId),
 			keyframes,
 			keys: Object.keys(keyframes),
-			initialMatrix: getInitialMatrix(elem),
+			initialMatrix: getInitialMatrix(elem, is3DMatrix(animationId)),
 		};
 		list.push(props);
 
@@ -442,9 +508,8 @@ export function Animator() {
 	};
 
 	this.updateElements = () => {
+		updateScreen();
 		contexts = [];
-		win.width = window.innerWidth;
-		win.height = window.innerHeight;
 		const nodeList = document.querySelectorAll('[data-animator-id]');
 		elements = Array.from(nodeList).reduce(parseElements, []);
 
