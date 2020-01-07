@@ -392,7 +392,9 @@ export function Animator() {
 
 			const id = elemGuid(el.node);
 			if (hasChanged(id, values)) {
-				Object.assign(el.node.style, values);
+				if (values) {
+					Object.assign(el.node.style, values);
+				}
 				lastValuesDictionnary[id] = JSON.stringify(values);
 			}
 		});
