@@ -1,5 +1,3 @@
-const matrixRegex = /^matrix\(\s*([0-9_+-.e]+)\s*,\s*([0-9_+-.e]+)\s*,\s*([0-9_+-.e]+)\s*,\s*([0-9_+-.e]+)\s*,\s*([0-9_+-.e]+)\s*,\s*([0-9_+-.e]+)\s*\)$/i;
-
 export function identity() {
 	return [
 		1, 0, 0, 0,
@@ -42,16 +40,31 @@ export function toCSS(array) {
 }
 
 export function fromString(string) {
-	const parsed = string.match(matrixRegex);
-	if (parsed === null || parsed.length < 7) throw new Error(`'${string}' is not a matrix`);
-	return {
-		a: parseFloat(parsed[1]),
-		b: parseFloat(parsed[2]),
-		c: parseFloat(parsed[3]),
-		d: parseFloat(parsed[4]),
-		e: parseFloat(parsed[5]),
-		f: parseFloat(parsed[6]),
-	};
+	return string.replace(/matrix(?:3d)?\(/i, '').replace(')', '').split(',').map(x => parseFloat(x.trim()));
+}
+
+// export function fromString(string) {
+// 	const parsed = string.match(matrixRegex);
+// 	if (parsed === null || parsed.length < 7) throw new Error(`'${string}' is not a matrix`);
+// 	return {
+// 		a: parseFloat(parsed[1]),
+// 		b: parseFloat(parsed[2]),
+// 		c: parseFloat(parsed[3]),
+// 		d: parseFloat(parsed[4]),
+// 		e: parseFloat(parsed[5]),
+// 		f: parseFloat(parsed[6]),
+// 	};
+// }
+
+export function matrix2dto3d(m) {
+	if (m.length === 16) return m;
+	const n = composeMultiple([
+		identity(),
+		translate(m[4], m[5], 0),
+		rotate(0),
+		scale(m[0], m[3], 1),
+	]);
+	return n;
 }
 
 export function compose(a, b) {
