@@ -1,10 +1,20 @@
+export const i2d = [
+	1, 0, 0, 1, 0, 0,
+];
+
+export const i3d = [
+	1, 0, 0, 0,
+	0, 1, 0, 0,
+	0, 0, 1, 0,
+	0, 0, 0, 1,
+];
+
 export function identity() {
-	return [
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1,
-	];
+	return [...i3d];
+}
+
+export function identity2d() {
+	return [...i2d];
 }
 
 export function translate(x, y, z) {
@@ -41,6 +51,10 @@ export function toCSS(array) {
 
 export function fromString(string) {
 	return string.replace(/matrix(?:3d)?\(/i, '').replace(')', '').split(',').map(x => parseFloat(x.trim()));
+}
+
+export function isIdentity2d(matrix) {
+	return matrix.every((x, i) => x === i2d[i]);
 }
 
 // export function fromString(string) {
