@@ -3,6 +3,7 @@
 // import 'core-js/fn/array/find';
 
 import { elemGuid } from './utils/guid';
+import * as Constants from './Constants';
 import { updateScreen } from './utils/screen';
 import parseWhen from './functions/parseWhen';
 import parseVal from './functions/parseVal';
@@ -68,6 +69,12 @@ export default class Animator {
 
 	constructor() {
 		Animator.instances.push(this);
+	}
+
+	static getConstants() {
+		return {
+			...Constants,
+		};
 	}
 
 	/**
