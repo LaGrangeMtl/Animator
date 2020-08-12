@@ -45,6 +45,7 @@ const ATTR_NAME = 'data-animator-id';
  */
 
 export default class Animator {
+	/** @type {Animator[]} */
 	static instances = [];
 
 	static updateAll() {
