@@ -1,88 +1,30 @@
-import valueOrDefault from './valueOrDefault';
+import { transform2d, transform2dRaw } from './transform2d';
+import transformValues from './transformValues';
+import { isIdentity2d } from '../utils/CssMatrix';
 
 /**
- * @typedef {object} RawTransforms
- * @property {number} tx
- * @property {number} ty
- * @property {number} sx
- * @property {number} sy
- * @property {number} r
+ * @param {HTMLElement} el 
+ * @param {Number} st 
  */
+export default function calculate2dTransforms(el, st) {
+	const vals = transformValues(el, st);
+	const vRaw = transform2dRaw(vals);
+	const v = transform2d(vals);
+	if (v.transform && el.initialMatrix && !isIdentity2d(el.initialMatrix)) {
+		const [a, b, c, d, tx, ty] = el.initialMatrix;
 
-function getValueOrDefaults(values) {
-	return {
-		tx: valueOrDefault(values.x, 0),
-		ty: valueOrDefault(values.y, 0),
-		rot: valueOrDefault(values.rotation, 0),
-		sx: valueOrDefault(values.scaleX, 1),
-		sy: valueOrDefault(values.scaleY, 1),
-	};
-}
+		const scaleX = Math.sign(a) * Math.sqrt((a * a) + (b * b));
+		const scaleY = Math.sign(d) * Math.sqrt((c * c) + (d * d));
+		const rotation = Math.atan2(-b, a);
 
-function hasValues(values) {
-	return (
-		values.rotation !== undefined
-		|| values.scaleX !== undefined
-		|| values.scaleY !== undefined
-		|| values.x !== undefined
-		|| values.y !== undefined
-		|| values.z !== undefined
-	);
-}
-
-/**
- * @param {object} values 
- * @param {Boolean} raw 
- * @returns {object}
- */
-function transform2d(values) {
-	if (hasValues) {
-		const {
-			tx, ty, rot, sx, sy,
-		} = getValueOrDefaults(values);
-
-		const t = `translate(${tx}px, ${ty}px)`;
-		const r = `rotate(${rot}deg)`;
-		const s = `scale(${sx}, ${sy})`;
-
-		values.transform = `${t} ${r} ${s}`;
-	}
-	
-	delete values.rotation;
-	delete values.scaleX;
-	delete values.scaleY;
-	delete values.x;
-	delete values.y;
-	delete values.z;
-	return values;
-}
-
-/**
- * @param {*} values
- * @returns {RawTransforms}
- */
-function transform2dRaw(values) {
-	if (hasValues) {
-		const {
-			tx, ty, rot, sx, sy,
-		} = getValueOrDefaults(values);
-
-		const t = `translate(${tx}px, ${ty}px)`;
-		const r = `rotate(${rot}deg)`;
-		const s = `scale(${sx}, ${sy})`;
-
-		values.transform = `${t} ${r} ${s}`;
-
-		return {
-			tx,
-			ty,
-			sx,
-			sy,
-			r: rot,
-		};
+		v.transform = transform2d({
+			scaleX: scaleX * vRaw.sx,
+			scaleY: scaleY * vRaw.sy,
+			rotation: rotation + vRaw.r,
+			x: tx + vRaw.tx,
+			y: ty + vRaw.ty,
+		}).transform;
 	}
 
-	return getValueOrDefaults({});
+	return v;
 }
-
-export { transform2d, transform2dRaw };
