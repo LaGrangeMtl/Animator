@@ -1,20 +1,50 @@
 import valueOrDefault from './valueOrDefault';
 
 /**
- * @param {object} values
+ * @typedef RawTransforms
+ * @type {object}
+ * @property {number} tx
+ * @property {number} ty
+ * @property {number} sx
+ * @property {number} sy
+ * @property {number} r
  */
-export default function transform2d(values) {
-	if (
+
+function getValueOrDefaults(values) {
+	return {
+		tx: valueOrDefault(values.x, 0),
+		ty: valueOrDefault(values.y, 0),
+		rot: valueOrDefault(values.rotation, 0),
+		sx: valueOrDefault(values.scaleX, 1),
+		sy: valueOrDefault(values.scaleY, 1),
+	};
+}
+
+function hasValues(values) {
+	return (
 		values.rotation !== undefined
 		|| values.scaleX !== undefined
 		|| values.scaleY !== undefined
 		|| values.x !== undefined
 		|| values.y !== undefined
 		|| values.z !== undefined
-	) {
-		const t = `translate(${valueOrDefault(values.x, 0)}px, ${valueOrDefault(values.y, 0)}px)`;
-		const r = `rotate(${valueOrDefault(values.rotation, 0)}deg)`;
-		const s = `scale(${valueOrDefault(values.scaleX, 1)}, ${valueOrDefault(values.scaleY, 1)})`;
+	);
+}
+
+/**
+ * @param {object} values 
+ * @param {Boolean} raw 
+ * @returns {(object)}
+ */
+function transform2d(values) {
+	if (hasValues) {
+		const {
+			tx, ty, rot, sx, sy,
+		} = getValueOrDefaults(values);
+
+		const t = `translate(${tx}px, ${ty}px)`;
+		const r = `rotate(${rot}deg)`;
+		const s = `scale(${sx}, ${sy})`;
 
 		values.transform = `${t} ${r} ${s}`;
 	}
@@ -27,3 +57,33 @@ export default function transform2d(values) {
 	delete values.z;
 	return values;
 }
+
+/**
+ * @param {*} values
+ * @returns {RawTransforms}
+ */
+function transform2dRaw(values) {
+	if (hasValues) {
+		const {
+			tx, ty, rot, sx, sy,
+		} = getValueOrDefaults(values);
+
+		const t = `translate(${tx}px, ${ty}px)`;
+		const r = `rotate(${rot}deg)`;
+		const s = `scale(${sx}, ${sy})`;
+
+		values.transform = `${t} ${r} ${s}`;
+
+		return {
+			tx,
+			ty,
+			sx,
+			sy,
+			r: rot,
+		};
+	}
+
+	return getValueOrDefaults({});
+}
+
+export { transform2d, transform2dRaw };

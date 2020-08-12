@@ -8,7 +8,7 @@ import { updateScreen } from './utils/screen';
 import parseWhen from './functions/parseWhen';
 import parseVal from './functions/parseVal';
 import getContextScrollTop from './functions/getContextScrollTop';
-import transform2d from './functions/transform2d';
+import { transform2d } from './functions/transform2d';
 import transformValues from './functions/transformValues';
 import matrix from './functions/matrix';
 import { i3d } from './utils/CssMatrix';
@@ -191,7 +191,8 @@ export default class Animator {
 
 			const isSVG = ~el.node.namespaceURI.indexOf('svg');
 			let values = null;
-			if (isSVG && el.node.tagName !== 'SVG') {
+
+			if (isSVG && el.node.tagName.toLowerCase() !== 'svg') {
 				values = transform2d(transformValues(el, st));
 			} else if (el.is3DMatrix || (el.initialMatrix && el.initialMatrix.length === 16)) {
 				if (!el.initialMatrix) el.initialMatrix = [...i3d];
