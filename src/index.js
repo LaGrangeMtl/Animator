@@ -147,7 +147,7 @@ export default class Animator {
 			this.animatorTopDictionnary[id] = el.getBoundingClientRect().top + el.scrollTop;
 			this.contexts.push(context);
 		}
-		return context;
+		return context || document.scrollingElement || document.documentElement;
 	}
 
 
