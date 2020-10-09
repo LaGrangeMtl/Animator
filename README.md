@@ -1,6 +1,6 @@
 # Animator
 
-The Animator is a dependency free animation library that allows you to apply css changes to a tag (and/or its children tags) in sync with the scroll.
+The Animator is a dependency-free animation library that allows you to apply CSS changes to a tag (and/or its children tags) in sync with the scroll.
 
 The basic principle of this library is to apply the modifications to the DOM in a very efficient way, avoiding "paint" and applying the [FLIP technique](https://aerotwist.com/blog/flip-your-animations/).
 
@@ -19,7 +19,7 @@ npm install --save @lagrange/animator
 ## Setting up the JS side of things:
 
 
-First things first, import the library, and instanciate the Animator:
+First things first, import the library, and instantiate the Animator:
 
 ```js
 import Animator from '@lagrange/animator';
@@ -33,22 +33,22 @@ We then need to assign a set of animations parameters to the Animator. These ani
 import Animator from '@lagrange/animator';
 
 const {
-	ELEM_BOTTOM,
-	ELEM_CENTER,
-	ELEM_TOP,
-	SCREEN_BOTTOM,
-	SCREEN_CENTER,
-	SCREEN_TOP,
+    ELEM_BOTTOM,
+    ELEM_CENTER,
+    ELEM_TOP,
+    SCREEN_BOTTOM,
+    SCREEN_CENTER,
+    SCREEN_TOP,
 } = Animator.getConstants();
 
 export const Animations = {
-	get() {
-		const animations = {};
+    get() {
+        const animations = {};
 
-		// ...
+        // ...
 
-		return animations;
-	}
+        return animations;
+    }
 }
 ```
 
@@ -56,22 +56,22 @@ Constants are used to specify how the animation will be handled. Here is a sampl
 
 ```js
 animations.simple_animation = {
-	props: [
-		{
-			when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
-			x: '100vw',
-		},
-		{
-			when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
-			x: '100vw',
-		}
-	]
+    props: [
+        {
+            when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
+            x: '100vw',
+        },
+        {
+            when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
+            x: '100vw',
+        }
+    ]
 }
 ```
 
 Here `simple_animation` is the ID of the animation, we'll use this later in the DOM to mark tags for animation.
 
-We then define the props we want to animate. This is a list of keyframes containing 2 informations:
+We then define the props we want to animate. This is a list of keyframes containing 2 pieces of information:
 
 1. **when**: the keyframe position (this determines at what point the animation should take the stated props values).
 2. **CSS props**: you can then define the value of the css properties to apply to the this keyframe, here are the current valid props:
@@ -91,32 +91,32 @@ You can also apply props to children elements, please note that the `ELEM_*` con
 
 ```js
 animations.simple_animation = {
-	props: [
-		{
-			when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
-			x: '0vw',
-		},
-		{
-			when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
-			x: '100vw',
-		}
-	],
-	children: [
-		{
-			selector: '.some-div',
-			props: [
-				{
-					when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
-					x: '0vw',
-				},
-				{
-					when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
-					x: '100vw',
-				}
-			]
-		},
-		// ...
-	]
+    props: [
+        {
+            when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
+            x: '0vw',
+        },
+        {
+            when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
+            x: '100vw',
+        }
+    ],
+    children: [
+        {
+            selector: '.some-div',
+            props: [
+                {
+                    when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
+                    x: '0vw',
+                },
+                {
+                    when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
+                    x: '100vw',
+                }
+            ]
+        },
+        // ...
+    ]
 }
 ```
 
@@ -124,10 +124,10 @@ Finally, you can adjust the timing of the animations by changing the ease, eithe
 
 ```js
 animations.simple_animation = {
-	ease: 'easeOutCubic',
-	props: [
-		//...
-	]
+    ease: 'easeOutCubic',
+    props: [
+        //...
+    ]
 }
 ```
 
@@ -135,15 +135,15 @@ and / or
 
 ```js
 animations.simple_animation = {
-	children: [
-		{
-			selector: '.some-div',
-			ease: 'easeInOutSine',
-			props: [
-				//...
-			]
-		}
-	]
+    children: [
+        {
+            selector: '.some-div',
+            ease: 'easeInOutSine',
+            props: [
+                //...
+            ]
+        }
+    ]
 }
 ```
 
@@ -151,10 +151,10 @@ If performance seems to be an issue, you can create a layer composition by forci
 
 ```js
 animations.simple_animation = {
-	force3d: true,
-	props: [
-		//...
-	]
+    force3d: true,
+    props: [
+        //...
+    ]
 }
 ```
 
@@ -162,16 +162,16 @@ Finally, this patterns allows us to define responsive animations via the functio
 
 ```js
 animations.simple_animation = {
-	props: [
-		{
-			when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
-			x: width < 768 ? '100vw' : '0vw',
-		},
-		{
-			when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
-			x: width < 768 ? '50vw' : '100vw',
-		}
-	],
+    props: [
+        {
+            when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
+            x: width < 768 ? '100vw' : '0vw',
+        },
+        {
+            when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
+            x: width < 768 ? '50vw' : '100vw',
+        }
+    ],
 }
 ```
 
@@ -188,7 +188,7 @@ Since every keyframe is calculated once and then cached, we need to call this fu
 
 ```js
 function onResize() {
-	animator.setAnimations(Animations.get(window.innerWidth));
+    animator.setAnimations(Animations.get(window.innerWidth));
 }
 ```
 
@@ -205,9 +205,9 @@ Or access the instances list, which is an array of all Animators:
 Animator.instances
 ```
 
-## A note on scrolljacking
+## A note on scroll jacking
 
-By default, the Animator listens to a 'scroll' event to triggers it's animations, you can however bypass this and the `animator.virtualScroll` function on demand:
+By default, the Animator listens to a 'scroll' event to triggers it's animations, you can however bypass this by calling the `animator.virtualScroll` function on-demand:
 
 ```js
 animator.virtualScroll(context, scrollTop);
@@ -216,17 +216,17 @@ animator.virtualScroll(context, scrollTop);
 Where `context` is the scrolling element and `scrollTop` the virtual scroll position.
 
 
-## Seting up the DOM.
+## Setting up the DOM.
 
 Here is the basic structure needed for the animator to work:
 
 ```html
 <html data-scrollbar>
-	<body>
-		<div data-animator-id="simple_animation">
-			<div class="some-div"></div>
-		</div>
-	</body>
+    <body>
+        <div data-animator-id="simple_animation">
+            <div class="some-div"></div>
+        </div>
+    </body>
 </html>
 ```
 
