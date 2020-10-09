@@ -231,3 +231,17 @@ Here is the basic structure needed for the animator to work:
 ```
 
 And that's it, you're all set! :)
+
+# Debugging
+
+Each instance of Animator has a function to help in its debugging:
+
+```js
+animator.debug()
+```
+
+Since the animator has a global shortcut, you can also type this in the console to debug your Animator:
+
+```js
+__Animator.instances[0].debug();
+```
