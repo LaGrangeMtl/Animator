@@ -33,12 +33,19 @@ We then need to assign a set of animations parameters to the Animator. These ani
 import Animator from '@lagrange/animator';
 
 const {
-    ELEM_BOTTOM,
-    ELEM_CENTER,
-    ELEM_TOP,
-    SCREEN_BOTTOM,
-    SCREEN_CENTER,
-    SCREEN_TOP,
+	ELEM_BOTTOM,
+	ELEM_CENTER,
+	ELEM_TOP,
+	ELEM_LEFT,
+	ELEM_H_CENTER,
+	ELEM_RIGHT,
+
+	SCREEN_BOTTOM,
+	SCREEN_CENTER,
+	SCREEN_TOP,
+	SCREEN_LEFT,
+	SCREEN_H_CENTER,
+	SCREEN_RIGHT,
 } = Animator.getConstants();
 
 export const Animations = {
@@ -58,11 +65,11 @@ Constants are used to specify how the animation will be handled. Here is a sampl
 animations.simple_animation = {
     props: [
         {
-            when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
+            when: [ELEM_TOP, SCREEN_BOTTOM],
             x: '100vw',
         },
         {
-            when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
+            when: [ELEM_BOTTOM, SCREEN_TOP],
             x: '100vw',
         }
     ]
@@ -86,6 +93,7 @@ For the `x` and `y` props, you can use the following units:
    - `px`
    - `vh` and `vw`
    - `%`
+   - `%p` relative to the parent element height (only used in children)
 
 You can also apply props to children elements, please note that the `ELEM_*` constants still refer to the parent's position.
 
@@ -93,11 +101,11 @@ You can also apply props to children elements, please note that the `ELEM_*` con
 animations.simple_animation = {
     props: [
         {
-            when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
+            when: [ELEM_TOP, SCREEN_BOTTOM],
             x: '0vw',
         },
         {
-            when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
+            when: [ELEM_BOTTOM, SCREEN_TOP],
             x: '100vw',
         }
     ],
@@ -106,11 +114,11 @@ animations.simple_animation = {
             selector: '.some-div',
             props: [
                 {
-                    when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
+                    when: [ELEM_TOP, SCREEN_BOTTOM],
                     x: '0vw',
                 },
                 {
-                    when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
+                    when: [ELEM_BOTTOM, SCREEN_TOP],
                     x: '100vw',
                 }
             ]
@@ -164,11 +172,11 @@ Finally, this patterns allows us to define responsive animations via the functio
 animations.simple_animation = {
     props: [
         {
-            when: `${ELEM_TOP}_${SCREEN_BOTTOM}`,
+            when: [ELEM_TOP, SCREEN_BOTTOM],
             x: width < 768 ? '100vw' : '0vw',
         },
         {
-            when: `${ELEM_BOTTOM}_${SCREEN_TOP}`,
+            when: [ELEM_BOTTOM, SCREEN_TOP],
             x: width < 768 ? '50vw' : '100vw',
         }
     ],
