@@ -1,14 +1,10 @@
 //@ts-check
 
-export function guid() {
+export function guid():string {
 	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-/**
- * @param {HTMLElement} element
- * @returns {string}
- */
-export function elemGuid(element) {
+export function elemGuid(element:HTMLElement):string {
 	let id = element.getAttribute('data-guid');
 	if (!id) {
 		id = guid();

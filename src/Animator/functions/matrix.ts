@@ -7,11 +7,7 @@ import {
 } from '../utils/CssMatrix';
 import valueOrDefault from './valueOrDefault';
 
-/**
- * @param {array} initialMatrix 
- * @param {object} values
- */
-export default function matrix(initialMatrix, values) {
+export default function matrix(initialMatrix:number[], values:AnimatorAnimValues):AnimatorAnimValues {
 	if (
 		values.rotation !== undefined
 		|| values.scaleX !== undefined
@@ -28,11 +24,5 @@ export default function matrix(initialMatrix, values) {
 		]));
 	}
 
-	delete values.rotation;
-	delete values.scaleX;
-	delete values.scaleY;
-	delete values.x;
-	delete values.y;
-	delete values.z;
 	return values;
 }

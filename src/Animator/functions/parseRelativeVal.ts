@@ -1,9 +1,4 @@
-/**
- * @param {string} prop 
- * @param {number} value 
- * @param {HTMLElement} elem 
- */
-export default function parseRelativeVal(prop, value, elem) {
+export default function parseRelativeVal(prop:string, value:number, elem:HTMLElement):number {
 	const rect = elem.getBoundingClientRect();
 
 	switch (prop) {

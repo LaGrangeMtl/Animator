@@ -17,7 +17,7 @@ export function identity2d() {
 	return [...i2d];
 }
 
-export function translate(x, y, z) {
+export function translate(x:number, y:number, z:number) {
 	return [
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -26,7 +26,7 @@ export function translate(x, y, z) {
 	];
 }
 
-export function scale(w, h, d) {
+export function scale(w:number, h:number, d:number) {
 	return [
 		w, 0, 0, 0,
 		0, h, 0, 0,
@@ -35,7 +35,7 @@ export function scale(w, h, d) {
 	];
 }
 
-export function rotate(a) {
+export function rotate(a:number) {
 
 	return [
 		Math.cos(a), -Math.sin(a), 0, 0,
@@ -45,32 +45,19 @@ export function rotate(a) {
 	];
 }
 
-export function toCSS(array) {
+export function toCSS(array:number[]):string {
 	return 'matrix3d(' + array.join(',') + ')';
 }
 
-export function fromString(string) {
+export function fromString(string:string):number[] {
 	return string.replace(/matrix(?:3d)?\(/i, '').replace(')', '').split(',').map(x => parseFloat(x.trim()));
 }
 
-export function isIdentity2d(matrix) {
+export function isIdentity2d(matrix:number[]) {
 	return matrix.every((x, i) => x === i2d[i]);
 }
 
-// export function fromString(string) {
-// 	const parsed = string.match(matrixRegex);
-// 	if (parsed === null || parsed.length < 7) throw new Error(`'${string}' is not a matrix`);
-// 	return {
-// 		a: parseFloat(parsed[1]),
-// 		b: parseFloat(parsed[2]),
-// 		c: parseFloat(parsed[3]),
-// 		d: parseFloat(parsed[4]),
-// 		e: parseFloat(parsed[5]),
-// 		f: parseFloat(parsed[6]),
-// 	};
-// }
-
-export function matrix2dto3d(m) {
+export function matrix2dto3d(m:number[]) {
 	if (m.length === 16) return m;
 	const n = composeMultiple([
 		identity(),
@@ -81,7 +68,7 @@ export function matrix2dto3d(m) {
 	return n;
 }
 
-export function compose(a, b) {
+export function compose(a:number[], b:number[]):number[] {
 	const result = [];
 
 	const a00 = a[0];
@@ -132,7 +119,7 @@ export function compose(a, b) {
 	return result;
 }
 
-export function composeMultiple(matrices) {
+export function composeMultiple(matrices:number[][]) {
 	let inputMatrix = matrices[0];
 
 	for (let i = 1; i < matrices.length; i += 1) {

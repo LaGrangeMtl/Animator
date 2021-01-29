@@ -14,7 +14,7 @@
   "main": "dist/animator.js",
   "module": "dist/animator.mjs",
   "unpkg": "dist/animator.umd.js",
-  "source": "src/index.js",
+  "source": "src/index.ts",
   "scripts": {
     "build": "microbundle",
     "dev": "microbundle watch"

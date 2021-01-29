@@ -2,12 +2,8 @@ import { transform2d, transform2dRaw } from './transform2d';
 import transformValues from './transformValues';
 import { isIdentity2d } from '../utils/CssMatrix';
 
-/**
- * @param {HTMLElement} el 
- * @param {Number} st 
- */
-export default function calculate2dTransforms(el, st) {
-	const vals = transformValues(el, st);
+export default function calculate2dTransforms(el:AnimatorElement, st:number, sl:number):AnimatorAnimValues {
+	const vals = transformValues(el, st, sl);
 	const vRaw = transform2dRaw(vals);
 	const v = transform2d(vals);
 	if (v.transform && el.initialMatrix && !isIdentity2d(el.initialMatrix)) {

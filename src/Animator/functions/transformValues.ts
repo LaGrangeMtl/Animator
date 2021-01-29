@@ -1,19 +1,19 @@
 import constrainValues from './constrainValues';
-import precision from './precision';
-/**
 
+/**
  * @param {AnimatorElement} el
  * @param {number} st
  */
-export default function transformValues(el, st) {
+export default function transformValues(el:AnimatorElement, st:number, sl:number):AnimatorPropDefinition {
 	return el.keys.map((propKey) => {
 		return {
 			st,
+			sl,
 			ease: el.ease,
 			key: propKey,
 			...el.keyframes[propKey]
 				.reduce((propCarry, propVal, i) => {
-					const [offset, value] = propVal;
+					const [offset, value, dir] = propVal as any;
 
 					switch (i) {
 						case 0: 
@@ -26,9 +26,11 @@ export default function transformValues(el, st) {
 							propCarry.endValue = value;
 							break;
 					}
+
+					propCarry.dir = dir;
 					
 					return propCarry;
-				}, {}),
+				}, {} as AnimatorPropDefinition),
 		};
 	}).reduce(constrainValues, {});
 }

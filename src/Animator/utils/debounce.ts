@@ -1,5 +1,5 @@
 /*eslint-disable*/
-export default function(func, wait, immediate) {
+export default function(func:Function, wait:number, immediate:boolean = false):Function {
 	let timeout;
 	return function() {
 		const context = this;

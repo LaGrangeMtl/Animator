@@ -1,26 +1,16 @@
 import valueOrDefault from './valueOrDefault';
 
-/**
- * @typedef RawTransforms
- * @type {object}
- * @property {number} tx
- * @property {number} ty
- * @property {number} sx
- * @property {number} sy
- * @property {number} r
- */
-
-function getValueOrDefaults(values) {
+function getValueOrDefaults(values):AnimatorRawTransforms {
 	return {
 		tx: valueOrDefault(values.x, 0),
 		ty: valueOrDefault(values.y, 0),
-		rot: valueOrDefault(values.rotation, 0),
+		r: valueOrDefault(values.rotation, 0),
 		sx: valueOrDefault(values.scaleX, 1),
 		sy: valueOrDefault(values.scaleY, 1),
 	};
 }
 
-function hasValues(values) {
+function hasValues(values:AnimatorAnimValues):boolean {
 	return (
 		values.rotation !== undefined
 		|| values.scaleX !== undefined
@@ -31,15 +21,10 @@ function hasValues(values) {
 	);
 }
 
-/**
- * @param {object} values 
- * @param {Boolean} raw 
- * @returns {(object)}
- */
-function transform2d(values) {
+function transform2d(values):AnimatorAnimValues {
 	if (hasValues) {
 		const {
-			tx, ty, rot, sx, sy,
+			tx, ty, r: rot, sx, sy,
 		} = getValueOrDefaults(values);
 
 		const t = `translate(${tx}px, ${ty}px)`;
@@ -49,12 +34,6 @@ function transform2d(values) {
 		values.transform = `${t} ${r} ${s}`;
 	}
 	
-	delete values.rotation;
-	delete values.scaleX;
-	delete values.scaleY;
-	delete values.x;
-	delete values.y;
-	delete values.z;
 	return values;
 }
 
@@ -62,10 +41,10 @@ function transform2d(values) {
  * @param {*} values
  * @returns {RawTransforms}
  */
-function transform2dRaw(values) {
+function transform2dRaw(values):AnimatorRawTransforms {
 	if (hasValues) {
 		const {
-			tx, ty, rot, sx, sy,
+			tx, ty, r: rot, sx, sy,
 		} = getValueOrDefaults(values);
 
 		const t = `translate(${tx}px, ${ty}px)`;

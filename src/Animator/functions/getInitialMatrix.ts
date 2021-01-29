@@ -1,9 +1,6 @@
 import { fromString, matrix2dto3d } from '../utils/CssMatrix';
 
-/**
- * @param {HTMLElement} elem 
- */
-export function getInitialMatrix(elem, is3D = false) {
+export function getInitialMatrix(elem:HTMLElement, is3D:boolean = false):number[] {
 	const prev = elem.style.transform;
 	elem.style.transform = '';
 	const transform = window.getComputedStyle(elem).getPropertyValue('transform');

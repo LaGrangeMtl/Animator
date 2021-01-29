@@ -1,5 +1,5 @@
 import precision from './precision';
 
-export default function valueOrDefault(value, defaultValue = 0) {
+export default function valueOrDefault(value:number, defaultValue:number = 0):number {
 	return value !== undefined ? precision(value) : defaultValue;
 }
